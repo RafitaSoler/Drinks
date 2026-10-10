@@ -10,7 +10,7 @@ namespace Drinks.Models
 
     internal class Drink
     {
-        [JsonPropertyName("idDrink")] public string Id { get; set; } = "";
-        [JsonPropertyName("strDrink")] public string Name { get; set; } = "";
+        [JsonPropertyName("idDrink")] public string? Id { get; set; }
+        [JsonPropertyName("strDrink")] public string? Name { get; set; }
     }
 }

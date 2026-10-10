@@ -20,5 +20,11 @@ namespace Drinks.Services
             DrinkList? result = await _client.GetFromJsonAsync<DrinkList>($"filter.php?c={Uri.EscapeDataString(name)}");
             return result?.DrinksList ?? new List<Drink>();
         }
+
+        internal static async Task<DrinkDetail?> GetDrinkById(string id)
+        {
+            DrinkDetailObject? result = await _client.GetFromJsonAsync<DrinkDetailObject>($"lookup.php?i={id}");
+            return result?.DrinkDetailList?[0] ?? null;
+        }
     }
 }

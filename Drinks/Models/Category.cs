@@ -10,6 +10,6 @@ namespace Drinks.Models
 
     internal class Category
     {
-        [JsonPropertyName("strCategory")] public string Name { get; set; } = "";
+        [JsonPropertyName("strCategory")] public string? Name { get; set; }
     }
 }

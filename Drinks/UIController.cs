@@ -1,6 +1,7 @@
 ﻿using Drinks.Models;
 using Drinks.Services;
 using Spectre.Console;
+using System.Reflection;
 using System.Text.Json;
 
 namespace Drinks
@@ -18,11 +19,20 @@ namespace Drinks
                 List<Category> categories = await AnsiConsole.Status().StartAsync("Fetching the categories...", _ => DrinksService.GetCategories());
                 while (!exitApp)
                 {
+                    AnsiConsole.Clear();
                     Category? category = PromptSelection("Choose a Drink Category", categories, c => c.Name, CancelCategory, "Exit");
                     if (category != null)
                     {
-                        List<Drink> drinks = await AnsiConsole.Status().Start("Fetching the drinks...", _ => DrinksService.GetDrinksByCategory(category.Name));
+                        List<Drink> drinks = await AnsiConsole.Status().StartAsync("Fetching the drinks...", _ => DrinksService.GetDrinksByCategory(category.Name));
                         Drink? drink = PromptSelection("Choose a Drink", drinks, d => d.Name, CancelDrink, "Go Back");
+                        if (drink != null)
+                        {
+                            DrinkDetail? drinkDetail = await AnsiConsole.Status().StartAsync("Fetching the drink details...", _ => DrinksService.GetDrinkById(drink.Id));
+                            if (drinkDetail != null)
+                            {
+                                DrawDrinkDetailTable(drinkDetail);
+                            }
+                        }
                     }
                     else
                     {
@@ -61,6 +71,29 @@ namespace Drinks
                 .WrapAround());
 
             return ReferenceEquals(selected, cancel) ? null : selected;
+        }
+
+        private static void DrawDrinkDetailTable(DrinkDetail drinkDetail)
+        {
+            Table table = new Table().AddColumns("Field", "Value");
+            foreach (PropertyInfo prop in typeof(DrinkDetail).GetProperties())
+            {
+                string? value = prop.GetValue(drinkDetail)?.ToString();
+                if (string.IsNullOrWhiteSpace(value)) continue;
+                table.AddRow(Markup.Escape(prop.Name), Markup.Escape(value));
+            }
+            AnsiConsole.Clear();
+            AnsiConsole.Write(table);
+            PromptGoBack();
+        }
+
+        private static void PromptGoBack()
+        {
+            AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                .HighlightStyle(Style.Parse("cyan"))
+                .AddChoices("Go Back")
+            );
         }
     }
 }
