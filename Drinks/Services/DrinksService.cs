@@ -21,10 +21,17 @@ namespace Drinks.Services
             return result?.DrinksList ?? new List<Drink>();
         }
 
-        internal static async Task<DrinkDetail?> GetDrinkById(string id)
+        internal static async Task<Dictionary<string, string?>?> GetDrinkById(string id)
         {
-            DrinkDetailObject? result = await _client.GetFromJsonAsync<DrinkDetailObject>($"lookup.php?i={id}");
-            return result?.DrinkDetailList?[0] ?? null;
+            DrinkDetailObject? result = await _client.GetFromJsonAsync<DrinkDetailObject>($"lookup.php?i={Uri.EscapeDataString(id)}");
+            return result?.DrinkDetailList?.FirstOrDefault();
+        }
+
+        internal static async Task<byte[]?> GetImage(string? url)
+        {
+            if (string.IsNullOrWhiteSpace(url)) return null;
+
+            return await _client.GetByteArrayAsync(url);
         }
     }
 }
