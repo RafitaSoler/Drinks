@@ -2,14 +2,14 @@
 
 namespace Drinks.Models
 {
-    internal class Categories
+    internal class CategoryList
     {
         [JsonPropertyName("drinks")]
-        public List<Category>? CategoryList { get; set; }
+        public List<Category>? CategoriesList { get; set; }
     }
 
     internal class Category
     {
-        [JsonPropertyName("strCategory")] public string CategoryName { get; set; } = "";
+        [JsonPropertyName("strCategory")] public string Name { get; set; } = "";
     }
 }
